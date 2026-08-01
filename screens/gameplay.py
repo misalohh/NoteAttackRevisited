@@ -1,4 +1,5 @@
 from colours import BACKGROUND
+from sprites.player import Player
 from UI.button import Button
 
 class Gameplay:
@@ -6,6 +7,7 @@ class Gameplay:
         self.width = width
         self.height = height
         self.back_button = Button(35, 35, 120, 60, "Back")
+        self.player = Player(width // 2, height // 2) 
 
     def update(self):
         pass
@@ -13,6 +15,7 @@ class Gameplay:
     def draw(self, surface, mouse_pos):
         surface.fill(BACKGROUND)
         self.back_button.draw(surface, mouse_pos)
+        self.player.draw(surface)
 
     def handle_click(self, mouse_pos):
             if self.back_button.is_clicked(mouse_pos):
