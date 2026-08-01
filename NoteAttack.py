@@ -1,5 +1,8 @@
 import pygame
-from UI.button import Button
+from screens.menu import Menu
+from screens.gameplay import Gameplay
+from screens.rules import Rules
+from screens.settings import Settings
 from sys import exit
 
 class Game:
@@ -8,16 +11,15 @@ class Game:
         self.WIDTH, self.HEIGHT = 960, 540
         self.game_canvas = pygame.Surface((self.WIDTH, self.HEIGHT))
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT), pygame.RESIZABLE)
-        self.font = pygame.font.Font('assets/Handwriting-Regular.ttf', 100)
-        
         self.clock = pygame.time.Clock()
 
         self.state = "menu"
-
-        self.start_button = Button(self.WIDTH // 2 - 175, 170, 350, 80, "Start")
-        self.rules_button = Button(self.WIDTH // 2 - 175, 270, 350, 80, "Rules")
-        self.settings_button = Button(self.WIDTH // 2 - 175, 370, 350, 80, "Settings")
-        
+        self.screens = {
+            "menu": Menu(self.WIDTH, self.HEIGHT),
+            "game": Gameplay(self.WIDTH, self.HEIGHT),
+            "rules": Rules(self.WIDTH, self.HEIGHT),
+            "settings": Settings(self.WIDTH, self.HEIGHT),
+        }
 
         pygame.display.set_caption('Note Attack Revisited')
 
@@ -27,45 +29,16 @@ class Game:
         sy = self.HEIGHT / self.screen.get_height()
         return (mx * sx, my * sy)
 
-    def draw_menu(self):
-        self.game_canvas.fill((132, 169, 192))
-        text_surface = self.font.render("Note Attack Revisited", True, (221, 216, 184))
-        text_rect = text_surface.get_rect(midtop=(self.WIDTH // 2, 50))
-        self.game_canvas.blit(text_surface, text_rect)
-        self.start_button.draw(self.game_canvas)
-        self.rules_button.draw(self.game_canvas)
-        self.settings_button.draw(self.game_canvas)
-
-    def draw_game(self):
-        self.game_canvas.fill((132, 169, 192))
-
-    def draw_settings(self):
-        self.game_canvas.fill((132, 169, 192))
-        text_surface = self.font.render("Settings", True, (221, 216, 184))
-        text_rect = text_surface.get_rect(midtop=(self.WIDTH // 2, 50))
-        self.game_canvas.blit(text_surface, text_rect)
-
-    def draw_rules(self):
-        self.game_canvas.fill((132, 169, 192))
-        text_surface = self.font.render("Rules", True, (221, 216, 184))
-        text_rect = text_surface.get_rect(midtop=(self.WIDTH // 2, 50))
-        self.game_canvas.blit(text_surface, text_rect)
-
     def draw(self):
-        if self.state == "menu":
-            self.draw_menu()
-        elif self.state == "game":
-            self.draw_game()
-        elif self.state == "rules":
-            self.draw_rules()
-        elif self.state == "settings":
-            self.draw_settings()
+        mouse_pos = self.get_canvas_mouse_pos()
+        self.screens[self.state].draw(self.game_canvas, mouse_pos)
 
         scaled = pygame.transform.scale(self.game_canvas, self.screen.get_size())
         self.screen.blit(scaled, (0, 0))
         pygame.display.update()
 
     def update(self):
+        self.screens[self.state].update()
         self.draw()
         self.clock.tick(60)
 
@@ -78,13 +51,8 @@ class Game:
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_pos = self.get_canvas_mouse_pos()
-
-                    if self.state == "menu":
-                        if self.start_button.is_clicked(mouse_pos):
-                            self.state = "game"
-                        if self.rules_button.is_clicked(mouse_pos):
-                            self.state = "rules"
-                        if self.settings_button.is_clicked(mouse_pos):
-                            self.state = "settings"
+                    result = self.screens[self.state].handle_click(mouse_pos)
+                    if result:
+                        self.state = result
 
             self.update()
