@@ -1,4 +1,3 @@
-from Game.NoteAttack import Game
+from NoteAttack import Game
 
 Game().run()
-
