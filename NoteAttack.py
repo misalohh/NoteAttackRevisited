@@ -52,6 +52,8 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_pos = self.get_canvas_mouse_pos()
                     result = self.screens[self.state].handle_click(mouse_pos)
+                    if result == "game":
+                        self.screens["game"].end_game()  # Reset the gameplay  when starting a new game
                     if result:
                         self.state = result
 
