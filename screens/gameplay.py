@@ -1,5 +1,5 @@
 import pygame
-from colours import BACKGROUND
+from colours import BACKGROUND, TEXT
 from sprites.player import Player
 from sprites.enemies import Enemy
 from UI.button import Button
@@ -9,19 +9,30 @@ class Gameplay:
         self.width = width
         self.height = height
         self.centre = (width // 2, height // 2)
-        self.back_button = Button(35, 35, 120, 60, "Back")
+        self.font = pygame.font.Font('assets/Handwriting-Regular.ttf', 170)
 
+        self.back_button = Button(35, 35, 120, 60, "Back")
         self.player = Player(width // 2, height // 2) 
 
         self.enemies = pygame.sprite.Group()
         self.spawn_timer = 0
         self.spawn_interval = 100
+        self.game_over = False
 
     def end_game(self):
         self.enemies.empty()
+        self.spawn_timer = 0
+        self.game_over = True
 
+    def start_game(self):
+        self.enemies.empty()
+        self.spawn_timer = 0
+        self.game_over = False
 
     def update(self):
+        if self.game_over:
+            return
+        
         self.spawn_timer += 1
         if self.spawn_timer >= self.spawn_interval:
             self.spawn_timer = 0
@@ -33,7 +44,6 @@ class Gameplay:
         for enemy in self.enemies:
             if enemy.check_collision(self.player):
                 self.end_game()
-                return "menu"
 
     def draw(self, surface, mouse_pos):
         surface.fill(BACKGROUND)
@@ -42,6 +52,11 @@ class Gameplay:
 
         for enemy in self.enemies:
             enemy.draw(surface)
+
+        if self.game_over:
+            text_surface = self.font.render("Game Over", True, TEXT)
+            text_rect = text_surface.get_rect(center=(self.width // 2, self.height // 2))
+            surface.blit(text_surface, text_rect)
 
     def handle_click(self, mouse_pos):
             if self.back_button.is_clicked(mouse_pos):
