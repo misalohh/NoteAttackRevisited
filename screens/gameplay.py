@@ -1,5 +1,6 @@
 import pygame
 from colours import BACKGROUND, TEXT
+from sprites.laser import Laser
 from sprites.player import Player
 from sprites.enemies import Enemy
 from UI.button import Button
@@ -13,6 +14,7 @@ class Gameplay:
 
         self.back_button = Button(35, 35, 120, 60, "Back")
         self.player = Player(width // 2, height // 2) 
+        self.lasers = []
 
         self.enemies = pygame.sprite.Group()
         self.spawn_timer = 0
@@ -45,10 +47,22 @@ class Gameplay:
             if enemy.check_collision(self.player):
                 self.end_game()
 
+        for laser in self.lasers:
+            laser.update()
+            for enemy in self.enemies:
+                if enemy.check_collision(laser):
+                    self.enemies.remove(enemy)
+                    self.lasers.remove(laser)
+                    break
+                
+        self.lasers = [laser for laser in self.lasers if not laser.finished]
+
     def draw(self, surface, mouse_pos):
         surface.fill(BACKGROUND)
         self.back_button.draw(surface, mouse_pos)
         self.player.draw(surface)
+        for laser in self.lasers:
+            laser.draw(surface)
 
         for enemy in self.enemies:
             enemy.draw(surface)
@@ -61,3 +75,7 @@ class Gameplay:
     def handle_click(self, mouse_pos):
             if self.back_button.is_clicked(mouse_pos):
                 return "menu"
+
+    def handle_key(self, key):
+        if key == pygame.K_SPACE:
+            self.lasers.append(Laser(self.centre[0], self.centre[1]))

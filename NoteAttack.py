@@ -57,4 +57,8 @@ class Game:
                     if result:
                         self.state = result
 
+                if event.type == pygame.KEYDOWN:             
+                    if self.state == "game":
+                        self.screens["game"].handle_key(event.key)
+
             self.update()
