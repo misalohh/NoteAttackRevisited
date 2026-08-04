@@ -18,11 +18,14 @@ class Gameplay:
 
         self.enemies = pygame.sprite.Group()
         self.spawn_timer = 0
-        self.spawn_interval = 100
+        self.spawn_interval = 150
+        self.difficulty = "medium"
+
         self.game_over = False
 
     def end_game(self):
         self.enemies.empty()
+        self.lasers.empty()
         self.spawn_timer = 0
         self.game_over = True
 
