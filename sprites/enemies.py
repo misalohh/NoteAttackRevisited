@@ -3,19 +3,19 @@ import random
 from colours import ENEMY, ENEMY_OUTLINE, TEXT
 
 class Enemy(pygame.sprite.Sprite):   
-    def __init__(self, screen_width, screen_height, target_pos, letter, radius=25, speed=2):
+    def __init__(self, screen_width, screen_height, target_pos, note, radius=25, speed=2):
         super().__init__()           
 
         self.radius = radius
         self.speed = speed
-        self.letter = letter
+        self.note = note
         self.font = pygame.font.Font('assets/Handwriting-Regular.ttf', 60)
 
         self.image = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
         pygame.draw.circle(self.image, ENEMY, (radius, radius), radius)
         pygame.draw.circle(self.image, ENEMY_OUTLINE, (self.radius, self.radius), self.radius, 4)
 
-        text_surface = self.font.render(self.letter, True, TEXT)
+        text_surface = self.font.render(self.note, True, TEXT)
         text_rect = text_surface.get_rect(center=(radius, radius))
         self.image.blit(text_surface, text_rect)
 

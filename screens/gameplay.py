@@ -25,6 +25,16 @@ class Gameplay:
 
         self.game_over = False
 
+        self.KEY_TO_NOTE = {
+            pygame.K_a: 'A',
+            pygame.K_b: 'B',
+            pygame.K_c: 'C',
+            pygame.K_d: 'D',
+            pygame.K_e: 'E',
+            pygame.K_f: 'F',
+            pygame.K_g: 'G',
+        }
+
     def end_game(self):
         self.enemies.empty()
         self.spawn_timer = 0
@@ -46,8 +56,8 @@ class Gameplay:
         self.spawn_timer += 1
         if self.spawn_timer >= self.spawn_interval:
             self.spawn_timer = 0
-            letter = random.choice('ABCDEFG')
-            enemy = Enemy(self.width, self.height, target_pos=self.centre, letter=letter)
+            note = random.choice(['A', 'B', 'C', 'D', 'E', 'F', 'G'])
+            enemy = Enemy(self.width, self.height, target_pos=self.centre, note=note)
             self.enemies.add(enemy)
 
         self.enemies.update()
@@ -59,7 +69,7 @@ class Gameplay:
         for laser in self.lasers:
             laser.update()
             for enemy in self.enemies:
-                if enemy.check_collision(laser):
+                if enemy.check_collision(laser) and enemy.note == laser.note:
                     self.enemies.remove(enemy)
                     self.lasers.remove(laser)
                     break
@@ -86,7 +96,8 @@ class Gameplay:
                 return "menu"
 
     def handle_key(self, key):
-        if key == pygame.K_SPACE:
-            if self.last_spawn_time <= 0:
-                self.lasers.append(Laser(self.centre[0], self.centre[1]))
-                self.last_spawn_time = self.spawn_buffer
+        if key in self.KEY_TO_NOTE and self.last_spawn_time <= 0:
+            note = self.KEY_TO_NOTE[key]
+            self.lasers.append(Laser(self.centre[0], self.centre[1], note=note))
+            self.last_spawn_time = self.spawn_buffer
+        

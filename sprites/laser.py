@@ -2,10 +2,11 @@ import pygame
 from colours import PLAYER_OUTLINE
 
 class Laser:
-    def __init__(self, x, y, start_radius=5, max_radius=700, growth_speed=4, outline_width=4):
+    def __init__(self, x, y, note, start_radius=5, max_radius=700, growth_speed=4, outline_width=4):
         self.color = PLAYER_OUTLINE
         self.pos = pygame.Vector2(x, y)
 
+        self.note = note
         self.radius = start_radius
         self.max_radius = max_radius
         self.growth_speed = growth_speed
