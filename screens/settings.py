@@ -35,13 +35,13 @@ class Settings:
                 return "menu"
             if self.easy_button.is_clicked(mouse_pos):
                 self.selected_difficulty = "easy"
-                self.spawn_interval = 250
+                self.gameplay.spawn_interval = 250
             if self.medium_button.is_clicked(mouse_pos):
                 self.selected_difficulty = "medium"
-                self.spawn_interval = 150
+                self.gameplay.spawn_interval = 170
             if self.hard_button.is_clicked(mouse_pos):
                 self.selected_difficulty = "hard"
-                self.spawn_interval = 50
+                self.gameplay.spawn_interval = 100
             return None
 
         

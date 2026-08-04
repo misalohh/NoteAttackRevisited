@@ -21,6 +21,8 @@ class Game:
             "settings": Settings(self.WIDTH, self.HEIGHT),
         }
 
+        self.screens["settings"].gameplay = self.screens["game"] 
+
         pygame.display.set_caption('Note Attack Revisited')
 
     def get_canvas_mouse_pos(self):

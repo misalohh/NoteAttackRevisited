@@ -12,7 +12,6 @@ class Laser:
         self.outline_width = outline_width
 
         self.image = self.laser_image()
-
         self.rect = self.image.get_rect(center=self.pos)
 
         self.finished = False

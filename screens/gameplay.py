@@ -1,4 +1,5 @@
 import pygame
+import random
 from colours import BACKGROUND, TEXT
 from sprites.laser import Laser
 from sprites.player import Player
@@ -19,29 +20,34 @@ class Gameplay:
         self.enemies = pygame.sprite.Group()
         self.spawn_timer = 0
         self.spawn_interval = 150
-        self.difficulty = "medium"
+        self.spawn_buffer = 0.3 # a buffer to prevent spamming lasers, in seconds
+        self.last_spawn_time = 0
 
         self.game_over = False
 
     def end_game(self):
         self.enemies.empty()
-        self.lasers.empty()
         self.spawn_timer = 0
         self.game_over = True
 
     def start_game(self):
         self.enemies.empty()
+        self.lasers.clear()
         self.spawn_timer = 0
         self.game_over = False
 
     def update(self):
         if self.game_over:
             return
+
+        if self.last_spawn_time > 0:
+            self.last_spawn_time -= 1 / 60
         
         self.spawn_timer += 1
         if self.spawn_timer >= self.spawn_interval:
             self.spawn_timer = 0
-            enemy = Enemy(self.width, self.height, target_pos=self.centre)
+            letter = random.choice('ABCDEFG')
+            enemy = Enemy(self.width, self.height, target_pos=self.centre, letter=letter)
             self.enemies.add(enemy)
 
         self.enemies.update()
@@ -81,4 +87,6 @@ class Gameplay:
 
     def handle_key(self, key):
         if key == pygame.K_SPACE:
-            self.lasers.append(Laser(self.centre[0], self.centre[1]))
+            if self.last_spawn_time <= 0:
+                self.lasers.append(Laser(self.centre[0], self.centre[1]))
+                self.last_spawn_time = self.spawn_buffer
