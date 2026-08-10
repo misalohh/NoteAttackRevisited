@@ -17,9 +17,9 @@ class Menu:
 
     def draw(self, surface, mouse_pos):
         surface.fill(BACKGROUND)
-        text_surface = self.font.render("Note Attack Revisited", True, TEXT)
-        text_rect = text_surface.get_rect(midtop=(self.width // 2, 50))
-        surface.blit(text_surface, text_rect)
+        menu_title = self.font.render("Note Attack Revisited", True, TEXT)
+        text_rect = menu_title.get_rect(midtop=(self.width // 2, 50))
+        surface.blit(menu_title, text_rect)
 
         self.start_button.draw(surface, mouse_pos)
         self.rules_button.draw(surface, mouse_pos)

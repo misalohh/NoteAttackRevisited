@@ -22,8 +22,8 @@ class Button:
             color = self.color
         pygame.draw.rect(surface, color, self.rect)
         pygame.draw.rect(surface, BUTTON_OUTLINE, self.rect, width=3)  
-        text_surface = self.font.render(self.text, True, self.text_color)
-        surface.blit(text_surface, text_surface.get_rect(center=self.rect.center))
+        button_text = self.font.render(self.text, True, self.text_color)
+        surface.blit(button_text, button_text.get_rect(center=self.rect.center))
 
     def is_clicked(self, mouse_pos):
         return self.rect.collidepoint(mouse_pos)

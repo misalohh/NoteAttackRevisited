@@ -38,6 +38,7 @@ class Game:
         scaled = pygame.transform.scale(self.game_canvas, self.screen.get_size())
         self.screen.blit(scaled, (0, 0))
         pygame.display.update()
+        self.screens[self.state].update()
 
     def update(self):
         self.screens[self.state].update()

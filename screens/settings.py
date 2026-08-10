@@ -21,9 +21,9 @@ class Settings:
 
     def draw(self, surface, mouse_pos):
         surface.fill(BACKGROUND)
-        text_surface = self.font.render("Settings", True, TEXT)
-        text_rect = text_surface.get_rect(midtop=(self.width // 2, 50))
-        surface.blit(text_surface, text_rect)
+        settings_title = self.font.render("Settings", True, TEXT)
+        text_rect = settings_title.get_rect(midtop=(self.width // 2, 50))
+        surface.blit(settings_title, text_rect)
 
         self.back_button.draw(surface, mouse_pos)
         self.easy_button.draw(surface, mouse_pos, selected=self.selected_difficulty == "easy")

@@ -12,10 +12,13 @@ class Gameplay:
         self.height = height
         self.centre = (width // 2, height // 2)
         self.font = pygame.font.Font('assets/Handwriting-Regular.ttf', 170)
+        self.score_text_font = pygame.font.Font('assets/Handwriting-Regular.ttf', 80)
+        self.score_font = pygame.font.Font('assets/JMH Typewriter-Thin.ttf', 45)
 
         self.back_button = Button(35, 35, 120, 60, "Back")
         self.player = Player(width // 2, height // 2) 
         self.lasers = []
+        self.score = 0
 
         self.enemies = pygame.sprite.Group()
         self.spawn_timer = 0
@@ -37,6 +40,7 @@ class Gameplay:
 
     def end_game(self):
         self.enemies.empty()
+        self.lasers.clear()
         self.spawn_timer = 0
         self.game_over = True
 
@@ -45,6 +49,7 @@ class Gameplay:
         self.lasers.clear()
         self.spawn_timer = 0
         self.game_over = False
+        self.score = 0
 
     def update(self):
         if self.game_over:
@@ -68,31 +73,53 @@ class Gameplay:
 
         for laser in self.lasers:
             laser.update()
+
+        enemies_to_remove = []
+        lasers_to_remove = []
+
+        for laser in self.lasers:
             for enemy in self.enemies:
-                if enemy.check_collision(laser) and enemy.note == laser.note:
-                    self.enemies.remove(enemy)
-                    self.lasers.remove(laser)
-                    break
-                
+                if enemy not in enemies_to_remove and enemy.check_collision(laser) and enemy.note == laser.note:
+                    enemies_to_remove.append(enemy)
+                    lasers_to_remove.append(laser)
+                    self.score += 1
+                    break   # this laser already matched an enemy, stop checking others
+
+        for enemy in enemies_to_remove:
+            self.enemies.remove(enemy)
+        for laser in lasers_to_remove:
+            self.lasers.remove(laser)
+           
         self.lasers = [laser for laser in self.lasers if not laser.finished]
 
     def draw(self, surface, mouse_pos):
         surface.fill(BACKGROUND)
         self.back_button.draw(surface, mouse_pos)
-        self.player.draw(surface)
-        for laser in self.lasers:
-            laser.draw(surface)
 
-        for enemy in self.enemies:
-            enemy.draw(surface)
+        if not self.game_over:
+            self.player.draw(surface)
+            
+            for laser in self.lasers:
+                laser.draw(surface)
+
+            for enemy in self.enemies:
+                enemy.draw(surface)
+
+        score_text = self.score_text_font.render("Score:", True, TEXT)
+        text_rect = score_text.get_rect(topright=(self.width - 100, 50))
+        surface.blit(score_text, text_rect)
+
+        actual_score = self.score_font.render(str(self.score), True, TEXT)
+        surface.blit(actual_score, (self.width - 50 - actual_score.get_width(), 50))
 
         if self.game_over:
-            text_surface = self.font.render("Game Over", True, TEXT)
-            text_rect = text_surface.get_rect(center=(self.width // 2, self.height // 2))
-            surface.blit(text_surface, text_rect)
+            game_over_text = self.font.render("Game Over!" , True, TEXT)
+            text_rect1 = game_over_text.get_rect(center=(self.width // 2, self.height // 2))
+            surface.blit(game_over_text, text_rect1)
 
     def handle_click(self, mouse_pos):
             if self.back_button.is_clicked(mouse_pos):
+                self.end_game()
                 return "menu"
 
     def handle_key(self, key):
