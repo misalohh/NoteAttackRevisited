@@ -1,10 +1,11 @@
 import pygame
 import random
+
 from colours import BACKGROUND, TEXT
-from sprites.laser import Laser
-from sprites.player import Player
-from sprites.enemies import Enemy
-from UI.button import Button
+from sprites.Laser import Laser
+from sprites.Player import Player
+from sprites.Enemies import Enemy
+from UI.Button import Button
 
 class Gameplay:
     def __init__(self, width, height):
@@ -27,6 +28,13 @@ class Gameplay:
         self.last_spawn_time = 0
 
         self.game_over = False
+
+        self.midi_input = None  # This will be set externally if MIDI input is available
+
+        self.MIDI_NOTE_TO_LETTER = {
+            0: 'C', 1: 'C', 2: 'D', 3: 'D', 4: 'E', 5: 'F',
+            6: 'F', 7: 'G', 8: 'G', 9: 'A', 10: 'A', 11: 'B',
+        }
 
         self.KEY_TO_NOTE = {
             pygame.K_a: 'A',
@@ -122,9 +130,25 @@ class Gameplay:
                 self.end_game()
                 return "menu"
 
-    def handle_key(self, key):
-        if key in self.KEY_TO_NOTE and self.last_spawn_time <= 0:
-            note = self.KEY_TO_NOTE[key]
+    def midi_note_to_letter(self, note_number):
+        return self.MIDI_NOTE_TO_LETTER[note_number % 12]
+
+    def poll_midi(self):
+        if self.midi_input and self.midi_input.poll():
+            for event in self.midi_input.read(10):  # Read up to 10 events at once
+                status, note_number, velocity, _ = event[0]
+                if status == 144 and velocity > 0:  # Note on event
+                    note_letter = self.midi_note_to_letter(note_number)
+                    self.handle_midi_note_on(note_letter)
+
+    def fire_laser(self, note):
+        if self.last_spawn_time <= 0:
             self.lasers.append(Laser(self.centre[0], self.centre[1], note=note))
             self.last_spawn_time = self.spawn_buffer
-        
+
+    def handle_key(self, key):
+        if key in self.KEY_TO_NOTE:
+            self.fire_laser(self.KEY_TO_NOTE[key])
+
+    def handle_midi_note_on(self, note_letter):
+        self.fire_laser(note_letter)

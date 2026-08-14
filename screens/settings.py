@@ -1,6 +1,6 @@
 import pygame
-from screens import gameplay
-from UI.button import Button
+from screens import Gameplay
+from UI.Button import Button
 from colours import BACKGROUND, TEXT
 
 class Settings:

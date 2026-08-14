@@ -1,5 +1,5 @@
 import pygame
-from UI.button import Button
+from UI.Button import Button
 from colours import BACKGROUND, TEXT
 
 class Rules:

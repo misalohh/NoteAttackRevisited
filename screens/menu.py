@@ -1,5 +1,6 @@
 import pygame
-from UI.button import Button
+from UI.Button import Button
+from UI.CircleButton import CircleButton
 from colours import BACKGROUND, TEXT
 
 class Menu:
@@ -11,6 +12,9 @@ class Menu:
         self.start_button = Button(width // 2 - 175, 170, 350, 80, "Start")
         self.rules_button = Button(width // 2 - 175, 270, 350, 80, "Rules")
         self.settings_button = Button(width // 2 - 175, 370, 350, 80, "Settings")
+
+        self.leaderboard_button = CircleButton(width // 2 - 175, 470, 40, "Leaderboard")
+        self.exit_button = CircleButton(width // 2 + 135, 470, 40, "Exit")
 
     def update(self):
         pass

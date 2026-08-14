@@ -1,13 +1,16 @@
 import pygame
-from screens.menu import Menu
-from screens.gameplay import Gameplay
-from screens.rules import Rules
-from screens.settings import Settings
+import pygame.midi
+from screens.Menu import Menu
+from screens.Gameplay import Gameplay
+from screens.Rules import Rules
+from screens.Settings import Settings
 from sys import exit
 
 class Game:
     def __init__(self):
         pygame.init()
+        pygame.midi.init()
+
         self.WIDTH, self.HEIGHT = 960, 540
         self.game_canvas = pygame.Surface((self.WIDTH, self.HEIGHT))
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT), pygame.RESIZABLE)
@@ -22,6 +25,19 @@ class Game:
         }
 
         self.screens["settings"].gameplay = self.screens["game"] 
+
+        self.midi_input = None
+        for i in range(pygame.midi.get_count()):
+                    interf, name, input, output, opened = pygame.midi.get_device_info(i)
+                    if input:
+                        self.midi_input = pygame.midi.Input(i)
+                        print(f"Using MIDI input device: {name.decode()}")
+                        break 
+
+        if self.midi_input is None:
+            print("No MIDI input device found.")
+
+        self.screens["game"].midi_input = self.midi_input
 
         pygame.display.set_caption('Note Attack Revisited')
 
@@ -38,7 +54,6 @@ class Game:
         scaled = pygame.transform.scale(self.game_canvas, self.screen.get_size())
         self.screen.blit(scaled, (0, 0))
         pygame.display.update()
-        self.screens[self.state].update()
 
     def update(self):
         self.screens[self.state].update()
@@ -49,6 +64,9 @@ class Game:
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    if self.midi_input:
+                        self.midi_input.close()
+                    pygame.midi.quit()
                     pygame.quit()
                     exit()
 
@@ -63,5 +81,8 @@ class Game:
                 if event.type == pygame.KEYDOWN:             
                     if self.state == "game":
                         self.screens["game"].handle_key(event.key)
+
+            if self.state == "game" and self.midi_input:
+                self.screens["game"].poll_midi()
 
             self.update()
