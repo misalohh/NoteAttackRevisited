@@ -77,7 +77,10 @@ class Gameplay:
 
         for enemy in self.enemies:
             if enemy.check_collision(self.player):
+                if self.is_highscore(self.score):
+                    self.save_highscore(self.score)
                 self.end_game()
+                break  # Exit the loop if the game is over
 
         for laser in self.lasers:
             laser.update()
@@ -121,6 +124,10 @@ class Gameplay:
         surface.blit(actual_score, (self.width - 50 - actual_score.get_width(), 50))
 
         if self.game_over:
+            if self.is_highscore(self.score):
+                highscore_text = self.score_text_font.render("New Highscore!" , True, TEXT)
+                text_rect2 = highscore_text.get_rect(center=(self.width // 2, self.height // 2 + 100))
+                surface.blit(highscore_text, text_rect2)
             game_over_text = self.font.render("Game Over!" , True, TEXT)
             text_rect1 = game_over_text.get_rect(center=(self.width // 2, self.height // 2))
             surface.blit(game_over_text, text_rect1)
@@ -152,3 +159,28 @@ class Gameplay:
 
     def handle_midi_note_on(self, note_letter):
         self.fire_laser(note_letter)
+
+    def is_highscore(self, score):
+        try:
+            with open("leaderboard.txt", "r") as f:
+                highscores = [int(line.strip()) for line in f.readlines()]
+        except FileNotFoundError:
+            highscores = []
+
+        if len(highscores) < 5 or score > min(highscores):
+            return True
+        return False
+
+    def save_highscore(self, score):
+        try:
+            with open("leaderboard.txt", "r") as f:
+                highscores = [int(line.strip()) for line in f.readlines()]
+        except FileNotFoundError:
+            highscores = []
+
+        highscores.append(score)
+        highscores = sorted(highscores, reverse=True)[:10]
+
+        with open("leaderboard.txt", "w") as f:
+            for score in highscores:
+                f.write(f"{score}\n")
