@@ -4,6 +4,7 @@ from screens.Menu import Menu
 from screens.Gameplay import Gameplay
 from screens.Rules import Rules
 from screens.Settings import Settings
+from screens.Leaderboard import Leaderboard
 from sys import exit
 
 class Game:
@@ -22,6 +23,7 @@ class Game:
             "game": Gameplay(self.WIDTH, self.HEIGHT),
             "rules": Rules(self.WIDTH, self.HEIGHT),
             "settings": Settings(self.WIDTH, self.HEIGHT),
+            "leaderboard": Leaderboard(self.WIDTH, self.HEIGHT)
         }
 
         self.screens["settings"].gameplay = self.screens["game"] 
@@ -73,6 +75,12 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_pos = self.get_canvas_mouse_pos()
                     result = self.screens[self.state].handle_click(mouse_pos)
+                    if result == "exit":
+                        if self.midi_input:
+                            self.midi_input.close()
+                        pygame.midi.quit()
+                        pygame.quit()
+                        exit()
                     if result == "game":
                         self.screens["game"].start_game()  # Reset the gameplay  when starting a new game
                     if result:
